@@ -52,6 +52,9 @@ def get_file_path(stream, destination, config):
     elif destination == "s3":
         bucket = config["bucket"]
         prefix = config["prefix"]
+        logger.info(f"bucket: {bucket}")
+        logger.info(f"prefix: {prefix}")
+        logger.info(f"filename: {filename}")
         return urljoin(f"s3://{bucket}{prefix}/", filename)
     else:
         raise KeyError(f"Destination {destination} not supported.")
