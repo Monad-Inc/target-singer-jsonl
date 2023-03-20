@@ -45,16 +45,12 @@ def urljoin(*args):
 
 
 def get_file_path(stream, destination, config):
-    logger.info(f"STREAM_NAME: {stream}")
-    filename = f"{stream}/{stream}-{file_timestamp}.singer.gz"
+    filename = f"{stream}/{stream}-{file_timestamp}.gz"
     if destination == "local":
         return Path(config["folder"]).joinpath(filename)
     elif destination == "s3":
         bucket = config["bucket"]
         prefix = config["prefix"]
-        logger.info(f"bucket: {bucket}")
-        logger.info(f"prefix: {prefix}")
-        logger.info(f"filename: {filename}")
         return urljoin(f"s3://{bucket}{prefix}/", filename)
     else:
         raise KeyError(f"Destination {destination} not supported.")
@@ -78,7 +74,6 @@ def write_lines_s3(destination, config, stream, lines):
         stream_files[stream] = get_file_path(
             stream=stream, destination=destination, config=config
         )
-    logger.info(f"stream files: {stream_files}")
     with open(stream_files[stream], "w", encoding="utf-8") as outfile:
         logging.info(f"Writing to file: {stream_files[stream]}")
         for line in lines:
@@ -89,6 +84,7 @@ def write_lines_s3(destination, config, stream, lines):
 def write_lines(config, stream, lines):
     destination = config.get("destination", "local")
     if destination == "local":
+        logger.info(f"destination is local")
         return write_lines_local(
             destination=destination,
             config=config[destination],
